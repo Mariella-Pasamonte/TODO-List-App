@@ -2,8 +2,27 @@
     import { RouterLink} from 'vue-router'
     import { useRouter } from 'vue-router' 
     import {ref} from 'vue'
+    import SidebarButton from './sidebar-button.vue'
+    import { onMounted, onBeforeUnmount } from "vue"
     
     const search = ref('')
+    const text = ref('')
+    const isAddCategory = ref(false)
+    const elRef = ref<HTMLElement | null>(null)
+
+    function handleClickOutside(event: MouseEvent) {
+    if (elRef.value && !elRef.value.contains(event.target as Node)) {
+        isAddCategory.value = false
+    }
+    }
+
+    onMounted(() => {
+    document.addEventListener("mousedown", handleClickOutside)
+    })
+
+    onBeforeUnmount(() => {
+    document.removeEventListener("mousedown", handleClickOutside)
+    })
 
     const router = useRouter()
 
@@ -23,12 +42,18 @@
                     </input>
                 </div>
                 <!--Category-->
-                <div className="w-full border-b-2 pb-1 border-[#aaa8a4]">
+                <div className="grid gap-1 w-full border-b-2 pb-1 border-[#aaa8a4]">
                     <div className="w-full font-extrabold text-sky-950">
                         CATEGORY
                     </div>
+                    <!--List of Categories-->
                     <div className="w-full">
-                        <button className="w-full font-bold rounded-2xl border-2 text-[#aaa8a4] border-[#aaa8a4] hover:bg-[#c2bfb8] hover:text-[#e4ded8] hover:border-[#d4cfc9] place-content-center">+</button>
+                        <SidebarButton label="Work"/>
+                    </div>
+                    <!--Add Category-->
+                    <div ref="elRef" className="w-full grid gap-1">
+                        <input v-if='isAddCategory' @keydown.enter="isAddCategory=false" className="w-full pl-2 bg-[#c2bfb8] font-semibold text-sky-950 rounded-lg"></input>
+                        <button @click="isAddCategory=true" className="w-full font-bold rounded-2xl border-2 text-[#aaa8a4] border-[#aaa8a4] hover:bg-[#c2bfb8] hover:text-[#e4ded8] hover:border-[#d4cfc9] place-content-center">+</button>
                     </div>
                 </div>
                 <!--Types-->
@@ -36,13 +61,9 @@
                     <div className="w-full font-extrabold text-sky-950">
                         TYPES
                     </div>
-                    <div className="h-full grid grid-rows-2 gap-x-1">
-                        <button className="w-full text-left px-2 font-semibold text-sky-950 hover:bg-[#c2bfb8]  rounded-lg cursor-pointer">
-                            Incomplete
-                        </button>
-                        <button className="w-full text-left px-2 font-semibold text-sky-950 hover:bg-[#c2bfb8] rounded-lg cursor-pointer">
-                            Complete
-                        </button>
+                    <div className="w-full grid grid-rows-2 gap-x-1">
+                        <SidebarButton label="Incomplete"/>
+                        <SidebarButton label="Complete"/>
                     </div>
                 </div>
             </div>

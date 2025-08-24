@@ -10,11 +10,11 @@
     </div>
     <!--Tasks-->
     <div className="col-start-3 col-span-6 w-full h-full">
-      
+
     </div>
     <!--Task Information Responsive-->
     <div className="col-start-9 col-span-2 w-full h-full bg-[#d4cfc9]">
-
+    
     </div>
   </main>
 </template>

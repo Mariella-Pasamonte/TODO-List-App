@@ -11,65 +11,38 @@
         router.push(address)
     }
 
+    const emit = defineEmits<{
+        (e: "notif", notif: String, isError: Boolean): void
+    }>()
     const username = ref('')
     const password = ref('')
 
-    const error = ref("");
-    const success = ref("");
-
-    const isSuccess = ref(false);
-    const isError = ref(false);
-
     const login = async () => {
-        error.value = "";
-        success.value = "";
+        if(username.value!==''||password.value!==''){
+            try {
+                const response = await axios.post("http://127.0.0.1:8000/api/login", {
+                    username: username.value,
+                    password: password.value,
+                });
 
-        try {
-            const response = await axios.post("http://127.0.0.1:8000/api/login", {
-                username: username.value,
-                password: password.value,
-            });
-
-            success.value = response.data.message;
-            console.log("User:", response.data.user);
-            isSuccess.value=true
-            route('/home');
-        } catch (err:any) {
-            if (err.response) {
-                error.value = err.response.data.message || "Login failed";
-            } else {
-                error.value = "Server not reachable";
+                emit('notif','Login successful',false)
+                console.log("User:", response.data.user);
+                route('/home');
+            } catch (err:any) {
+                if (err.response) {
+                    emit('notif',err.response.data.message || "Login failed",true)
+                } else {
+                    emit('notif',"Server not reachable",true)
+                }
             }
-            isError.value=true
+        }else{
+            emit('notif',"Please fill up all the fields.",true)
         }
-    }
-
-    function close(){
-        isError.value=false
-        isSuccess.value=false
     }
 </script>
 
 <template>
   <div className="relative grid h-[100%] w-[100%] place-content-center">
-    <div
-        class="absolute flex flex-row h-fit w-fit right-2 transition-all ease-in-out duration-700 delay-300 rounded-xl p-3 bg-red-500 text-white place-content-center"
-        :class="isError?'top-2 opacity-100':'top-10 opacity-0'"
-    >
-        <p className="place-content-center">{{ error }}</p>
-        <button @click="close()" className="flex flex-col justify-center h-6 ml-2 w-fit border-white rounded-full">
-            <FontAwesomeIcon :icon="faXmarkCircle"/>
-        </button>
-    </div>
-    <div
-        class="absolute w-fit right-2 transition-all ease-in duration-300 delay-150 grid rounded-xl p-3 bg-green-600 text-white place-content-center"
-        :class="isSuccess?'top-2 opacity-100':'top-10 opacity-0'"
-    >
-        <p className="place-content-center">{{ success }}</p>
-        <button @click="close()" className="flex flex-col justify-center h-6 ml-2 w-fit border-white rounded-full">
-            <FontAwesomeIcon :icon="faXmarkCircle"/>
-        </button>
-    </div>
     <div className="h-60 w-110">
         <div className="h-[20%] w-full content-center bg-sky-800 rounded-t-2xl">
             <h1 className="text-center font-bold text-2xl text-white">Welcome!</h1>

@@ -3,7 +3,7 @@
     import { useRouter } from 'vue-router' 
     import axios from "axios";
     import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+    import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
     
     const router = useRouter()
 
@@ -20,14 +20,9 @@ import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
     const email = ref('')
     const password = ref('')
     const confPassword = ref('')
-    const error=ref('')
-    const success=ref('')
     const isEmpty=ref(false)
 
     const signup = async () => {
-        error.value = "";
-        success.value = "";
-
         if(firstName.value!==''||lastName.value!==''||username.value!==''||email.value!==''||password.value!==''||confPassword.value!==''){
             if(password.value===confPassword.value){
                 console.log("Password is the same.");

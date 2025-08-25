@@ -1,10 +1,16 @@
   <script setup lang="ts">
-    import { RouterView } from 'vue-router'
+    import { RouterView, useRouter } from 'vue-router'
     import Header from './components/header.vue'
-    import {ref} from 'vue'
+    import {ref, onMounted } from 'vue'
     import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
     import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 
+    const router = useRouter()
+
+    function route(address:string){
+        router.push(address)
+    }
+   
     const isNotif = ref(false)
     const isErr = ref<Boolean | null>(null)
     const notification = ref<String | null>(null)
@@ -21,11 +27,18 @@
       isErr.value = isError
       isNotif.value = true
       userId.value = usrId
+      localStorage.setItem("userId", String(usrId));
     } 
 
     function close(){
       isNotif.value=false
     }
+
+    onMounted(() => {
+      const savedId = Number(localStorage.getItem("userId"));
+      if (savedId) userId.value = savedId;
+      else route('/')
+    });
   </script>
 
   <template >
@@ -46,7 +59,7 @@
               </button>
           </div>
         </div>
-        <RouterView @notif="onNotif" @loginNotif="loginOnNotif" UserId="userId"/>
+        <RouterView @notif="onNotif" @loginNotif="loginOnNotif"/>
       </div>
     </div>
   </template>

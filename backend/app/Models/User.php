@@ -48,12 +48,12 @@ class User extends Authenticatable
         ];
     }
 
-    public function categories()
+    public function userscategories()
     {
-        return $this->hasMany(Category::class);
+        return $this->hasMany(Category::class, 'user_id');
     }
 
-    public function tasks()
+    public function userstasks()
     {
         return $this->hasMany(Task::class);
     }

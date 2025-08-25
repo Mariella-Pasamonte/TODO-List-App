@@ -13,3 +13,4 @@ Route::post('/login',[UserController::class,'loggingIn']);
 
 //Category Controller
 Route::post('/addCategory',[CategoryController::class,'add']);
+Route::get('/categories', [CategoryController::class, 'getCategory']);

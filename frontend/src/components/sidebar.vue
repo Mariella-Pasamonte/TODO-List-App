@@ -1,21 +1,34 @@
 <script setup lang="ts">
     import { useRouter } from 'vue-router' 
-    import {ref} from 'vue'
+    import {ref, onMounted} from 'vue'
     import SidebarButton from './sidebar-button.vue'
     import {useClickOutside} from '@/composables/useClickOutside'
+    import axios from "axios";
     
+    const router = useRouter()
+
+    function route(address:string){
+        router.push(address)
+    }
+    
+    const emit = defineEmits<{
+        (e: "notify", notif: String, isError: Boolean): void
+    }>()
     const elRef = ref<HTMLElement | null>(null)
     
     const search = ref('')
     const isAddCategory = ref(false)
     const filterCategory = ref('')
     const filterType = ref('')
+    const categoryName = ref('')
+    const userId = Number(localStorage.getItem("userId"))
+    const categories = ref([])
 
     useClickOutside(elRef,isAddCategory)
 
-    const activeButton = ref<string | null>(null)
+    const activeButton = ref<String | null>(null)
 
-    function setActive(id: string) {
+    function setActive(id: String) {
         activeButton.value = id
     }
 
@@ -23,17 +36,50 @@
         filterCategory.value=''
         filterType.value=''
     }
-    const router = useRouter()
 
-    function route(address:string){
-        router.push(address)
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/categories?user_id=${userId}`)
+            categories.value = response.data.categories
+            console.log("categories:", categories)
+        } catch (err) {
+            console.error('Error fetching categories:', err)
+        }
     }
+
+    const addCategory = async () => {
+        if(categoryName.value!==''){
+            try {
+                console.log('Sidebar: User:', userId);
+                const response = await axios.post("http://127.0.0.1:8000/api/addCategory", {
+                    name: categoryName.value,
+                    user_id: userId,
+                });
+                categoryName.value=''
+                emit('notify','Category added successfuly',false)
+                route('/home');
+                isAddCategory.value=false
+                await fetchCategories()
+            } catch (err:any) {
+                if (err.response) {
+                    emit('notify',err.response.data.message || "Adding Category failed",true)
+                } else {
+                    emit('notify',"Server not reachable",true)
+                }
+            }
+        }else{
+            emit('notify',"Please input category.",true)
+        }
+    }
+    
+
+    onMounted(fetchCategories);
 </script>
 
 <template>
     <div className="h-full w-full py-3 border-r-4 border-[#c0bcb8]">
-        <div className="h-full w-full flex flex-col justify-between px-3">
-            <div className="w-full flex flex-col">
+        <div className="h-full w-full grid grid-rows-12 px-3">
+            <div className="row-span-13 w-full flex flex-col">
                 <!--Search Bar-->
                 <div className="w-full relative border-b-2 border-[#aaa8a4] pb-1">
                     <input v-model="search" type="text" placeholder="Search" className="w-full pl-2 bg-white rounded-sm">
@@ -46,17 +92,18 @@
                         CATEGORY
                     </div>
                     <!--List of Categories-->
-                    <div className="w-full">
+                    <div className="w-full h-30 overflow-auto">
                         <SidebarButton 
-                            label="Work" 
-                            id="Work"
-                            :active="activeButton==='Work'" 
+                            v-for="category in categories"
+                            :label="category.name" 
+                            :id="'ctgry-' + category.id"
+                            :active="activeButton==='ctgry-' + category.id" 
                             @set-active="setActive"
                         />
                     </div>
                     <!--Add Category-->
                     <div ref="elRef" className="w-full grid gap-1">
-                        <input v-if='isAddCategory' @keydown.enter="isAddCategory=false" className="w-full pl-2 bg-[#c2bfb8] font-semibold text-sky-950 rounded-lg"></input>
+                        <input v-if='isAddCategory' v-model='categoryName' @keydown.enter="addCategory" className="w-full pl-2 bg-[#c2bfb8] font-semibold text-sky-950 rounded-lg"></input>
                         <button @click="isAddCategory=true" className="w-full font-bold rounded-2xl border-2 text-[#aaa8a4] border-[#aaa8a4] hover:bg-[#c2bfb8] hover:text-[#e4ded8] hover:border-[#d4cfc9] place-content-center">+</button>
                     </div>
                 </div>
@@ -90,11 +137,18 @@
                             clear
                         </button>
                     </div>
-                    <div className="grid grid-cols-2">
-                        <div>
-                            <input type="radio" id="one" value="One" v-model="filterCategory" >
-                                <label for="one" className="font-semibold text-sky-950">Work</label>
-                            </input>
+                    <div className="grid grid-cols-2 h-35">
+                        <div className="col-start-1 col-span-1 overflow-auto">
+                            <div v-for="category in categories" :key="category.id" >
+                                <input 
+                                    type="radio" 
+                                    :id="'radio-' + category.id"
+                                    :value="category.id" 
+                                    v-model="filterCategory" 
+                                >
+                                    <label :for="'radio-'+category.id" className="font-semibold text-sky-950 h-fit">{{ category.name }}</label>
+                                </input>
+                            </div>
                         </div>
                         <div>
                             <div>
@@ -112,7 +166,7 @@
                 </div>
             </div>
             <!--Settings-->
-            <div className="w-full">
+            <div className="row-start-15 w-full">
                 <button className="w-full grid grid-cols-8 pl-1 py-1 rounded-lg hover:bg-[#c2bfb8]">
                     <div className="col-start-1 col-span-1">
                         <img src="@/assets/settings.svg" alt="Settings" className="h-7 w-7"/>

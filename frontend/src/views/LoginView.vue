@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import {ref} from 'vue'
+    import {mergeProps, ref} from 'vue'
     import { useRouter } from 'vue-router'
     import axios from "axios";
     
@@ -34,7 +34,7 @@
                 }
             }
         }else{
-            emit('notif',"Please fill up all the fields.",true)
+            emit('loginNotif',"Please fill up all the fields.",true)
         }
     }
 </script>

@@ -10,6 +10,12 @@
   const isAddTask = ref(false)
   const isTaskClicked = ref(false)
 
+  const emit = defineEmits(["notif"]);
+
+  function handleNotify(msg:String,isErr:Boolean) {
+    emit("notif", msg,isErr);
+  }
+
   useClickOutside(taskRef,isAddTask)
   useClickOutside(taskRef,isTaskClicked)
 
@@ -23,7 +29,7 @@
   <main className="w-full h-full grid grid-cols-10">
     <!--Sidebar-->
     <div className="col-start-1 col-span-2 w-full h-full bg-[#d4cfc9]">
-      <Sidebar />
+      <Sidebar @notify='handleNotify'></Sidebar>
     </div>
     <!--Tasks-->
     <div className="col-start-3 col-span-5 px-3 w-full h-full pt-2">

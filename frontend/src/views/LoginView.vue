@@ -2,8 +2,6 @@
     import {ref} from 'vue'
     import { useRouter } from 'vue-router'
     import axios from "axios";
-    import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-    import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
     
     const router = useRouter()
 
@@ -12,7 +10,7 @@
     }
 
     const emit = defineEmits<{
-        (e: "notif", notif: String, isError: Boolean): void
+        (e: "loginNotif", notif: String, isError: Boolean, userId: Number): void
     }>()
     const username = ref('')
     const password = ref('')
@@ -25,14 +23,14 @@
                     password: password.value,
                 });
 
-                emit('notif','Login successful',false)
+                emit('loginNotif','Login successful',false,response.data.user)
                 console.log("User:", response.data.user);
                 route('/home');
             } catch (err:any) {
                 if (err.response) {
-                    emit('notif',err.response.data.message || "Login failed",true)
+                    emit('loginNotif',err.response.data.message || "Login failed",true)
                 } else {
-                    emit('notif',"Server not reachable",true)
+                    emit('loginNotif',"Server not reachable",true)
                 }
             }
         }else{

@@ -72,8 +72,7 @@ class UserController extends Controller
             }
             return response()->json([
                 'message' => 'Login successful!',
-                'user'    => $user,
-                // 'token' => $token, // uncomment if using tokens
+                'user'    => $user->id,
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([

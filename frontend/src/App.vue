@@ -8,11 +8,19 @@
     const isNotif = ref(false)
     const isErr = ref<Boolean | null>(null)
     const notification = ref<String | null>(null)
+    const userId = ref<Number | null>(null)
 
     function onNotif(notif:String,isError:Boolean) {
       notification.value = notif
       isErr.value = isError
       isNotif.value = true
+    } 
+
+    function loginOnNotif(notif:String,isError:Boolean,usrId:Number) {
+      notification.value = notif
+      isErr.value = isError
+      isNotif.value = true
+      userId.value = usrId
     } 
 
     function close(){
@@ -38,7 +46,7 @@
               </button>
           </div>
         </div>
-        <RouterView @notif="onNotif"/>
+        <RouterView @notif="onNotif" @loginNotif="loginOnNotif" UserId="userId"/>
       </div>
     </div>
   </template>

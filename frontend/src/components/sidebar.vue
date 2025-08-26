@@ -1,15 +1,9 @@
 <script setup lang="ts">
-    import { useRouter } from 'vue-router' 
     import {ref, onMounted} from 'vue'
     import SidebarButton from './sidebar-button.vue'
     import {useClickOutside} from '@/composables/useClickOutside'
     import axios from "axios";
-    
-    const router = useRouter()
-
-    function route(address:string){
-        router.push(address)
-    }
+    import type { CategoryType } from '@/types/Category';
     
     const emit = defineEmits<{
         (e: "notify", notif: String, isError: Boolean): void
@@ -22,7 +16,7 @@
     const filterType = ref('')
     const categoryName = ref('')
     const userId = Number(localStorage.getItem("userId"))
-    const categories = ref([])
+    const categories = ref<CategoryType[]>([])
 
     useClickOutside(elRef,isAddCategory)
 
@@ -41,7 +35,6 @@
         try {
             const response = await axios.get(`http://127.0.0.1:8000/api/categories?user_id=${userId}`)
             categories.value = response.data.categories
-            console.log("categories:", categories)
         } catch (err) {
             console.error('Error fetching categories:', err)
         }
@@ -57,7 +50,6 @@
                 });
                 categoryName.value=''
                 emit('notify','Category added successfuly',false)
-                route('/home');
                 isAddCategory.value=false
                 await fetchCategories()
             } catch (err:any) {
@@ -72,7 +64,6 @@
         }
     }
     
-
     onMounted(fetchCategories);
 </script>
 
@@ -92,10 +83,13 @@
                         CATEGORY
                     </div>
                     <!--List of Categories-->
-                    <div className="w-full h-30 overflow-auto">
+                    <div 
+                        class="w-full overflow-auto"
+                        :class="categories.length>3?'h-23':'h-fit'"
+                    >
                         <SidebarButton 
                             v-for="category in categories"
-                            :label="category.name" 
+                            :label="`${category.name}`" 
                             :id="'ctgry-' + category.id"
                             :active="activeButton==='ctgry-' + category.id" 
                             @set-active="setActive"
@@ -139,7 +133,7 @@
                     </div>
                     <div className="grid grid-cols-2 h-35">
                         <div className="col-start-1 col-span-1 overflow-auto">
-                            <div v-for="category in categories" :key="category.id" >
+                            <div v-for="category in categories" :key="`${category.id}`" >
                                 <input 
                                     type="radio" 
                                     :id="'radio-' + category.id"

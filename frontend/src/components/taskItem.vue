@@ -5,25 +5,15 @@
 
     function toggleActive() {
         isActive.value = !isActive.value
-    }   
-
-    const props = defineProps({
-        label: {
-            type: String,
-            required: true
-        },
-        id:{
-            type: String,
-            required: true
-        },
-        date:{
-            type: String,
-        },
-        category:{
-            type: String,
-        },
-        active: Boolean
-    });
+    }
+    
+    const props = defineProps<{
+        label:string,
+        id:string,
+        date?:string|null,
+        category?:string|null,
+        active:boolean
+    }>();
     
     const emit = defineEmits<{
         (e: "set-active", id: String): void
@@ -32,19 +22,16 @@
 
 <template>
     <button @click="emit('set-active', props.id)"
-    class="flex flex-row justify-between w-full text-left py-2 px-4 font-semibold border-t-2 border-[#c2bfb8] text-sky-950 cursor-pointer"
+    class="grid grid-cols-3 gap-2 w-full text-left py-2 px-4 rounded-l-sm font-semibold text-sky-950 cursor-pointer"
     :class="props.active?'bg-[#c2bfb8]':'hover:bg-[#c2bfb8]'">
-        <div className="flex flex-col justify-center">
-            {{ props.label}}
+        <div className="justify-center overflow-hidden">
+            <p className="truncate">{{ props.label}}</p>
         </div>
-        <div className="flex flex-col justify-center text-red-700">
-            {{ props.date }}
+        <div className="justify-center text-red-700">
+            <p v-if="props.date" className="truncate text-right">{{ props.date}}</p>
         </div>
-        <div className="flex flex-col justify-center">
-            {{ props.category }}
+        <div className="">
+            <p v-if="props.category" className="truncate text-right">{{ props.category}}</p>
         </div>
-        <div className="flex flex-col justify-center">
-            <slot name="completeButton"/>  
-        </div> 
     </button>
 </template>

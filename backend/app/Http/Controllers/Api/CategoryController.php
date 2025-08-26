@@ -47,6 +47,13 @@ class CategoryController extends Controller
 
             $categories = Category::where('user_id', (int)$userId)->get();
 
+            $categories = $categories->map(function($category){
+                return[
+                    'id'        => $category->id,
+                    'name'         => $category->name,
+                ];
+            });
+
             return response()->json([
                 'message' => 'Get categories successful!',
                 'categories'=> $categories,

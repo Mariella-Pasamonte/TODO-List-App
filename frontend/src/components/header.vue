@@ -10,6 +10,11 @@
     function route(address:string){
         router.push(address)
     }
+
+    function loggingOut(){
+        route("/")
+        localStorage.clear();
+    }
 </script>
 
 <template>
@@ -22,17 +27,11 @@
             </div>
             <nav 
                 class='h-full grid gap-x-1 content-center'
-                :class="isHome ? 'grid-cols-3':'grid-cols-4'"
+                :class="isHome ? 'grid-cols-1':'grid-cols-2'"
             >
-                <button  @click="route('/home')" className="px-6 py-1 font-bold text-sky-950 rounded-full bg-[#d8e0e6] cursor-pointer">
-                    <RouterLink to="/home">Home</RouterLink>
-                </button>
-                <button @click="route('/about')" className="px-5 py-1 font-bold text-sky-950 rounded-full bg-[#d8e0e6] cursor-pointer">
-                    <RouterLink to="/about">About</RouterLink>
-                </button>
                 <div v-if="isHome" className="col-span-1">
-                    <button @click="route('/')" className="px-5 py-0.5 rounded-full font-bold text-[#d8e0e6] border-2 border-[#d8e0e6] hover:bg-[#d8e0e6] hover:text-sky-950 cursor-pointer">
-                        <RouterLink to="/">Logout</RouterLink>
+                    <button @click="loggingOut" className="px-5 py-0.5 rounded-full font-bold text-[#d8e0e6] border-2 border-[#d8e0e6] hover:bg-[#d8e0e6] hover:text-sky-950 cursor-pointer">
+                        Logout
                     </button>
                 </div>
                 <div v-else className="grid grid-cols-2 col-span-2 gap-x-1">

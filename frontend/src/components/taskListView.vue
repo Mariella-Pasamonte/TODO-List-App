@@ -35,6 +35,7 @@
                 }
             });
             emit('notify',response.data.message,false)
+            emit('refreshTasks')
         } catch (err:any) {
             emit('notify',err.response.data.message,true)
         }
@@ -52,10 +53,16 @@
         })
         : "";
     }
+
+    const isOverdue = (dueDate?: Date) => {
+        if (!dueDate) return false;
+        const now = new Date();
+        return new Date(dueDate) < now;
+    };
 </script>
 
 <template>
-    <div ref="elRef" className="w-full h-fit">
+    <div ref="elRef" className="w-full h-[85%] overflow-auto">
         <div v-for="task in props.tasks" className="w-full grid grid-cols-10 border-t-2 border-[#c2bfb8]">
             <div v-if="task&&task.id" className="col-span-9 mr-2">
                 <TaskItem 
@@ -64,6 +71,7 @@
                     :label="`${task.name}`" 
                     :id="`tsk-${task.id}`"
                     :date="dateToString(task.dueDate)"
+                    :isDueDate="isOverdue(task.dueDate)"
                     :category="task.category" 
                     :active="activeButton===`tsk-${task.id}`&&isActive" 
                     @set-active="setActive"

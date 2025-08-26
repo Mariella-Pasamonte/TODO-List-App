@@ -1,18 +1,12 @@
 <script setup lang="ts"> 
-    import {ref} from 'vue'
-    
-    const isActive = ref(false)
-
-    function toggleActive() {
-        isActive.value = !isActive.value
-    }
     
     const props = defineProps<{
         label:string,
         id:string,
         date?:string|null,
         category?:string|null,
-        active:boolean
+        active:boolean,
+        isDueDate:boolean,
     }>();
     
     const emit = defineEmits<{
@@ -27,7 +21,10 @@
         <div className="justify-center overflow-hidden">
             <p className="truncate">{{ props.label}}</p>
         </div>
-        <div className="justify-center text-red-700">
+        <div 
+            class="justify-center"
+            :class="props.isDueDate?'text-red-700':'text-sky-950'"
+        >
             <p v-if="props.date" className="truncate text-right">{{ props.date}}</p>
         </div>
         <div className="">

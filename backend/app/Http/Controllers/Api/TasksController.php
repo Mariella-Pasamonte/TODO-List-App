@@ -22,7 +22,7 @@ class TasksController extends Controller
                     'id'        => $task->id,
                     'name'         => $task->name,
                     'description'  => $task->description,
-                    'isCompleted'  => $task->isCompleted,
+                    'isCompleted'  => (bool)$task->isCompleted,
                     'dueDate'      => $task->dueDate,
                     'category'     => $task->category ? $task->category->name : null,
                     'category_id'  => $task->category_id,
@@ -50,6 +50,7 @@ class TasksController extends Controller
             
             $task = Tasks::where('id', $id)->first();  
             $task->isCompleted = $request->isCompleted;
+            $task->updated_at = now();
             $task->save();
 
             return response()->json([
@@ -117,6 +118,7 @@ class TasksController extends Controller
             $task -> description   = $request -> description;
             $task -> dueDate       = $request -> dueDate;
             $task -> category_id   = $request -> category_id;
+            $task -> updated_at    = now();
             $task->save();
 
             return response()->json([

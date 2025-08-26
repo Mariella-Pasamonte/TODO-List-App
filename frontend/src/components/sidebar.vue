@@ -1,34 +1,74 @@
 <script setup lang="ts">
-    import {ref, onMounted} from 'vue'
+    import {ref, onMounted, watch} from 'vue'
     import SidebarButton from './sidebar-button.vue'
     import {useClickOutside} from '@/composables/useClickOutside'
     import axios from "axios";
     import type { CategoryType } from '@/types/Category';
     
     const emit = defineEmits<{
-        (e: "notify", notif: String, isError: Boolean): void
+        (e: "notify", notif: String, isError: Boolean): void,
+        (e: "update:filterCategory", id: number|null): void,
+        (e: "update:filterType", type:string): void,
+        (e: "srching", type:string):void,
     }>()
+
     const elRef = ref<HTMLElement | null>(null)
-    
-    const search = ref('')
+    const props = defineProps<{'searchText':string|''}>()
+    const search = ref(props.searchText)
     const isAddCategory = ref(false)
-    const filterCategory = ref('')
-    const filterType = ref('')
+    const filterCategory = ref<number|null>(null)
+    const filterType = ref<string|''>('')
     const categoryName = ref('')
     const userId = Number(localStorage.getItem("userId"))
     const categories = ref<CategoryType[]>([])
+    const activeButton = ref<string | null>(null)
+    const activeCategoryRadio = ref<boolean |false>(false)
+    const activeTypeRadio = ref<boolean |false>(false)
+
+    function setCategory(id: number) {
+        activeButton.value = `category-${id}`
+        filterType.value=''
+        filterCategory.value=null
+        emit("update:filterCategory", id)
+        emit("update:filterType", "") 
+    }
+
+    function setType(type: string) {
+        activeButton.value = type
+        filterType.value=''
+        filterCategory.value=null
+        emit("update:filterType", type)
+        emit("update:filterCategory", null)
+    }
+
+    function setRadioCategory(id: number){
+        if(activeButton.value){
+            activeButton.value=null
+            emit("update:filterType", "")
+            emit("update:filterCategory", null)
+        }
+        emit("update:filterCategory", id)
+    }
+
+    function setRadioType(type: string){
+        if(activeButton.value){
+            activeButton.value=null
+            emit("update:filterType", "")
+            emit("update:filterCategory", null)
+        }
+        emit("update:filterType", type) 
+    }
 
     useClickOutside(elRef,isAddCategory)
 
-    const activeButton = ref<String | null>(null)
-
-    function setActive(id: String) {
-        activeButton.value = id
-    }
-
-    function clearFilter(){
-        filterCategory.value=''
-        filterType.value=''
+    function clearButtons() {
+        activeButton.value = null
+        activeCategoryRadio.value=false
+        activeTypeRadio.value=false
+        filterCategory.value=null
+        filterType.value=""
+        emit("update:filterCategory", null)
+        emit("update:filterType", "")
     }
 
     const fetchCategories = async () => {
@@ -63,7 +103,9 @@
             emit('notify',"Please input category.",true)
         }
     }
-    
+
+    watch(search, (val) => {emit('srching',val)})
+
     onMounted(fetchCategories);
 </script>
 
@@ -79,8 +121,11 @@
                 </div>
                 <!--Category-->
                 <div className="grid gap-1 w-full border-b-2 pb-1 border-[#aaa8a4]">
-                    <div className="w-full font-extrabold text-sky-950">
-                        CATEGORY
+                    <div className="flex flex-row w-full justify-between ">
+                        <p class="font-extrabold text-sky-950">CATEGORY</p>
+                        <button v-if="activeButton||activeCategoryRadio||activeTypeRadio" @click='clearButtons' className=" text-red-600 cursor-pointer text-right">
+                            clear
+                        </button>
                     </div>
                     <!--List of Categories-->
                     <div 
@@ -89,10 +134,10 @@
                     >
                         <SidebarButton 
                             v-for="category in categories"
-                            :label="`${category.name}`" 
-                            :id="'ctgry-' + category.id"
-                            :active="activeButton==='ctgry-' + category.id" 
-                            @set-active="setActive"
+                            :label="category.name" 
+                            :id="category.id"
+                            :active="activeButton==='category-' + category.id" 
+                            @set-active="setCategory"
                         />
                     </div>
                     <!--Add Category-->
@@ -111,13 +156,13 @@
                             label="Incomplete"
                             id="Incomplete"
                             :active="activeButton==='Incomplete'" 
-                            @set-active="setActive"
+                            @set-active="()=>setType('Incomplete')"
                         />
                         <SidebarButton 
                             label="Complete"
                             id="Complete"
                             :active="activeButton==='Complete'" 
-                            @set-active="setActive"
+                            @set-active="()=>setType('Complete')"
                         />
                     </div>
                 </div>
@@ -127,9 +172,6 @@
                         <div className="w-full font-extrabold text-sky-950">
                             FILTER
                         </div>
-                        <button v-if="filterCategory||filterType" @click='clearFilter' className=" text-red-600 cursor-pointer text-right">
-                            clear
-                        </button>
                     </div>
                     <div className="grid grid-cols-2 h-35">
                         <div className="col-start-1 col-span-1 overflow-auto">
@@ -138,7 +180,9 @@
                                     type="radio" 
                                     :id="'radio-' + category.id"
                                     :value="category.id" 
-                                    v-model="filterCategory" 
+                                    v-model="filterCategory"
+                                    @change="setRadioCategory(category.id)" 
+                                    @click="activeCategoryRadio=true"
                                 >
                                     <label :for="'radio-'+category.id" className="font-semibold text-sky-950 h-fit">{{ category.name }}</label>
                                 </input>
@@ -146,12 +190,12 @@
                         </div>
                         <div>
                             <div>
-                                <input type="radio" id="typeOne" value="TypeOne" v-model="filterType" >
+                                <input type="radio" id="typeOne" value="TypeOne" v-model="filterType" @change="setRadioType('Incomplete')" @click="activeTypeRadio=true,activeButton=null" >
                                     <label for="typeOne" className="font-semibold text-sky-950">Incomplete</label>
                                 </input>
                             </div>
                             <div>
-                                <input type="radio" id="two" value="Two" v-model="filterType">
+                                <input type="radio" id="two" value="Two" v-model="filterType" @change="setRadioType('Complete')" @click="activeTypeRadio=true,activeButton=null">
                                     <label for="two" className="font-semibold text-sky-950">Complete</label>
                                 </input>
                             </div>

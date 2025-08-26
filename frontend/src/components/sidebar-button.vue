@@ -7,20 +7,14 @@
         isActive.value = !isActive.value
     }   
 
-    const props = defineProps({
-        label: {
-            type: String,
-            required: true
-        },
-        id: {
-            type: String,
-            required: true
-        }, 
+    const props = defineProps<{
+        label: string,
+        id: number|string, 
         active: Boolean
-    });
+    }>();
     
     const emit = defineEmits<{
-        (e: "set-active", id: String): void
+        (e: "set-active", id: number): void
     }>()
 </script>
 

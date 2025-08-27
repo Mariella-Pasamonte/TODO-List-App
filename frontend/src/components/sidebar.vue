@@ -203,17 +203,6 @@
                     </div>
                 </div>
             </div>
-            <!--Settings-->
-            <div className="row-start-15 w-full">
-                <button className="w-full grid grid-cols-8 pl-1 py-1 rounded-lg hover:bg-[#c2bfb8]">
-                    <div className="col-start-1 col-span-1">
-                        <img src="@/assets/settings.svg" alt="Settings" className="h-7 w-7"/>
-                    </div>
-                    <div className="col-start-2 col-span-3 place-content-center font-semibold text-sky-950">
-                        Settings
-                    </div>
-                </button>
-            </div>
         </div>
     </div>
 </template>

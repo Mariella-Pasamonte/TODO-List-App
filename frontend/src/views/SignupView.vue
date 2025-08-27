@@ -106,7 +106,7 @@
                             <FontAwesomeIcon :icon="faCircleExclamation"/>
                         </div>
                     </div>
-                    <input v-model="email" type="text" className="w-76.5 pl-2 col-start-2 bg-white rounded-md"></input>
+                    <input v-model="email" type="email" className="w-76.5 pl-2 col-start-2 bg-white rounded-md"></input>
                 </div>
                 <div className="grid grid-cols-2 gap-4 ">
                     <div className="cols-start-1 flex flex-row">

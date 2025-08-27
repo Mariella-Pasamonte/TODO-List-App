@@ -140,6 +140,12 @@
                             @set-active="setCategory"
                         />
                     </div>
+                    <div 
+                        class="w-full overflow-auto h-fit font-semibold text-center text-[#9e9c97]"
+                        v-if="categories.length===0"
+                    >
+                        Add Category
+                    </div>
                     <!--Add Category-->
                     <div ref="elRef" className="w-full grid gap-1">
                         <input v-if='isAddCategory' v-model='categoryName' @keydown.enter="addCategory" className="w-full pl-2 bg-[#c2bfb8] font-semibold text-sky-950 rounded-lg"></input>
@@ -173,7 +179,8 @@
                             FILTER
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 h-35">
+                    <div class="grid grid-cols-2"
+                    :class="categories?'h-35':'h-fit'">
                         <div className="col-start-1 col-span-1 overflow-auto">
                             <div v-for="category in categories" :key="`${category.id}`" >
                                 <input 

@@ -52,6 +52,7 @@
   function onChildClicked(id:number) {
     task.value = getTaskById(id)
     isTaskClicked.value=true
+    isAddTask.value = false
   } 
 
   function closeTask(isClose:boolean){
@@ -110,7 +111,7 @@
     <!--Tasks-->
     <div class="col-start-3 col-span-5 px-3 w-full h-full pt-2">
       <h1 class="w-full font-extrabold text-lg text-sky-950 pb-2"> ALL TASKS</h1>
-      <button @click="isAddTask=true" class="py-2 w-full font-bold border-t-2 text-[#aaa8a4] border-[#aaa8a4] hover:bg-[#c2bfb8] hover:text-[#e4ded8] hover:border-[#d4cfc9]">+ Add New Task</button>
+      <button @click="isAddTask=true,isTaskClicked=false" class="py-2 w-full font-bold border-t-2 text-[#aaa8a4] border-[#aaa8a4] hover:bg-[#c2bfb8] hover:text-[#e4ded8] hover:border-[#d4cfc9]">+ Add New Task</button>
       <TaskListView v-if="(allTasks.length>0&&isAllTasks)||filteredTasks.length>0||searchTasks.length>0" @tskId="onChildClicked" @notify="handleNotify" @refreshTasks="fetchTasks" :tasks="isFilter ? filteredTasks : isSearch? searchTasks : allTasks" />
       <div v-if="allTasks.length===0||(filteredTasks.length===0&&isFilter===true)"
         class="h-30 grid place-content-center font-bold text-sky-950"

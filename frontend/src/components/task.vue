@@ -46,8 +46,7 @@
 
     const fetchCategories = async () => {
         try {
-            // const response = await axios.get(`http://127.0.0.1:8000/api/categories?user_id=${userId}`)
-            const response = await axios.get(`https://proactive-perception-production.up.railway.app/api/categories?user_id=${userId}`)
+            const response = await axios.get(`http://127.0.0.1:8000/api/categories?user_id=${userId}`)
             categories.value = response.data.categories
         } catch (err) {
             console.error('Error fetching categories:', err)
@@ -57,8 +56,7 @@
     const editTask = async () =>{
         if(taskName.value!==''){
             try{
-                // const response = await axios.put(`http://127.0.0.1:8000/api/editTask/${props.tsk.id}`, {
-                const response = await axios.put(`https://proactive-perception-production.up.railway.app/api/editTask/${props.tsk.id}`, {
+                const response = await axios.put(`http://127.0.0.1:8000/api/editTask/${props.tsk.id}`, {
                     name: taskName.value,
                     description: taskDescription.value,
                     dueDate: formattedDate.value,

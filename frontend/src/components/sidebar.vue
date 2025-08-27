@@ -73,8 +73,7 @@
 
     const fetchCategories = async () => {
         try {
-            // const response = await axios.get(`http://127.0.0.1:8000/api/categories?user_id=${userId}`)
-            const response = await axios.get(`https://proactive-perception-production.up.railway.app/api/categories?user_id=${userId}`)
+            const response = await axios.get(`http://127.0.0.1:8000/api/categories?user_id=${userId}`)
             categories.value = response.data.categories
         } catch (err) {
             console.error('Error fetching categories:', err)
@@ -85,8 +84,7 @@
         if(categoryName.value!==''){
             try {
                 console.log('Sidebar: User:', userId);
-                // const response = await axios.post("http://127.0.0.1:8000/api/addCategory", {
-                const response = await axios.post("https://proactive-perception-production.up.railway.app/api/addCategory", {
+                const response = await axios.post("http://127.0.0.1:8000/api/addCategory", {
                     name: categoryName.value,
                     user_id: userId,
                 });

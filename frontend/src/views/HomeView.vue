@@ -15,6 +15,8 @@
   const filterCategory = ref<number | null>(null)
   const filterType = ref<string|"">("")
   const search = ref<string|''>('')
+  const isDeletePopUp = ref<boolean|false>(false)
+  const deleteTaskId = ref<number|null>(null)
 
   const isFilter = computed(() => !!filterCategory.value || !!filterType.value)
   const isSearch = computed(() => !!search.value)
@@ -65,19 +67,50 @@
           emit('notif',err.response.data.message,true)
       }
   }
+
+  const deleteTask = async() =>{
+      try{
+          const response = await axios.delete(`http://127.0.0.1:8000/api/deleteTask/${deleteTaskId.value}`);
+          fetchTasks()
+          closeTask(false)
+          isDeletePopUp.value=false
+          emit('notif',response.data.message,false)
+      } catch (err:any){
+          if (err.response) {
+              emit('notif',err.response.data.message || "Deleting Task failed",true)
+          } else {
+              emit('notif',"Server not reachable",true)
+          }
+      }
+    }
+
+    function deletePopUp(id:number){
+      deleteTaskId.value = id
+      isDeletePopUp.value = true
+    }
+
   onMounted(fetchTasks)
 </script>
 
 <template>
-  <main className="w-full h-full grid grid-cols-10">
+  <main class="relative w-full h-full grid grid-cols-10">
+    <div v-if="isDeletePopUp&&task" class="absolute grid z-[99] backdrop-blur-[1px] w-full h-full place-content-center" >
+      <div class="grid gap-5 place-content-center p-3 bg-[#e2ddd7] shadow-md w-70 h-40 rounded-lg">
+        <p class="text-center text-sky-950 font-semibold">Are you sure you want to delete "{{ task.name }}" task?</p>
+        <div class="grid grid-cols-6 gap-2 w-full">
+          <button @click="isDeletePopUp=false" class="col-start-2 col-span-2 text-white bg-sky-800 hover:bg-sky-700 py-1 font-bold rounded-2xl cursor-pointer">Cancel</button>
+          <button @click="deleteTask" class="col-start-4 col-span-2 text-white bg-red-600 hover:bg-[#c20e0e] py-1 font-bold rounded-2xl cursor-pointer">Delete</button>
+        </div>
+      </div>
+    </div>
     <!--Sidebar-->
-    <div className="col-start-1 col-span-2 w-full h-full bg-[#d4cfc9]">
+    <div class="col-start-1 col-span-2 w-full h-full bg-[#d4cfc9]">
       <Sidebar :searchText="search" @srching="search=$event" @notify='handleNotify' @update:filterCategory="filterCategory=$event" @update:filterType="filterType=$event"></Sidebar>
     </div>
     <!--Tasks-->
-    <div className="col-start-3 col-span-5 px-3 w-full h-full pt-2">
-      <h1 className="w-full font-extrabold text-lg text-sky-950 pb-2"> ALL TASKS</h1>
-      <button @click="isAddTask=true" className="py-2 w-full font-bold border-t-2 text-[#aaa8a4] border-[#aaa8a4] hover:bg-[#c2bfb8] hover:text-[#e4ded8] hover:border-[#d4cfc9]">+ Add New Task</button>
+    <div class="col-start-3 col-span-5 px-3 w-full h-full pt-2">
+      <h1 class="w-full font-extrabold text-lg text-sky-950 pb-2"> ALL TASKS</h1>
+      <button @click="isAddTask=true" class="py-2 w-full font-bold border-t-2 text-[#aaa8a4] border-[#aaa8a4] hover:bg-[#c2bfb8] hover:text-[#e4ded8] hover:border-[#d4cfc9]">+ Add New Task</button>
       <TaskListView v-if="(allTasks.length>0&&isAllTasks)||filteredTasks.length>0||searchTasks.length>0" @tskId="onChildClicked" @notify="handleNotify" @refreshTasks="fetchTasks" :tasks="isFilter ? filteredTasks : isSearch? searchTasks : allTasks" />
       <div v-if="allTasks.length===0||(filteredTasks.length===0&&isFilter===true)"
         class="h-30 grid place-content-center font-bold text-sky-950"
@@ -86,9 +119,9 @@
       </div>
     </div>
     <!--Task Information Responsive-->
-    <div ref="taskRef" className="col-start-8 col-span-3 w-full h-full bg-[#d4cfc9]">
+    <div ref="taskRef" class="col-start-8 col-span-3 w-full h-full bg-[#d4cfc9]">
       <NewTask @close="closeTask" @notify="handleNotify" @refreshTasks="fetchTasks" v-if="isAddTask"/>
-      <Task @refreshTasks="fetchTasks" @close="closeTask" @notify="handleNotify" v-if="isTaskClicked &&task" :tsk="task"/>
+      <Task @delete="deletePopUp" @refreshTasks="fetchTasks" @close="closeTask" @notify="handleNotify" v-if="isTaskClicked &&task" :tsk="task"/>
     </div>
   </main>
 </template>

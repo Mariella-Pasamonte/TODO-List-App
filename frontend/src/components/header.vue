@@ -20,9 +20,12 @@
 <template>
     <header className="h-fit w-full py-3 bg-sky-800">
         <div className="h-full w-full flex flex-row justify-between px-5">
-            <div className="h-full content-center">
+            <div className="flex flex-row gap-1 h-full content-center">
                 <div className="text-2xl font-sans font-bold italic text-white rounded-full place-content-center">
                     TODO
+                </div>
+                <div class="grid text-md place-content-end text-white font-semibold italic">
+                    v1
                 </div>
             </div>
             <nav 

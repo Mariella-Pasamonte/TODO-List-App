@@ -12,6 +12,7 @@
         (e: "refreshTasks"):void,
         (e: "close", isErr:boolean):void,
         (e: "notify", msg: String, isErr:Boolean): void,
+        (e: "delete", id: number): void,
     }>()
     const props = defineProps<{
         tsk:TaskType,
@@ -75,21 +76,6 @@
             emit('notify',"Please input Task name.", true)
         }
     }
-    
-    const deleteTask = async() =>{
-        try{
-            const response = await axios.delete(`http://127.0.0.1:8000/api/deleteTask/${props.tsk.id}`);
-            emit('refreshTasks')
-            emit('close',false)
-            emit('notify',response.data.message,false)
-        } catch (err:any){
-            if (err.response) {
-                emit('notify',err.response.data.message || "Deleting Task failed",true)
-            } else {
-                emit('notify',"Server not reachable",true)
-            }
-        }
-    }
 
     onMounted(fetchCategories)
 </script>
@@ -103,7 +89,7 @@
                     <div class="flex justify-between h-7 mb-1 w-full font-extrabold text-sky-950">
                         <p className="place-content-center">TASK</p>
                         <div className="text-red-600 place-content-center">
-                            <button @click="deleteTask">
+                            <button @click="emit('delete',props.tsk.id)" class=" cursor-pointer">
                                 <FontAwesomeIcon class="fa-lg" :icon="faTrash"/>
                             </button>
                         </div>
@@ -156,8 +142,8 @@
             </div>
             <!--Buttons-->
             <div class="grid grid-cols-4 gap-2">
-                <button @click="emit('close',false)" class="col-start-2 text-white bg-red-600 hover:bg-[#c20e0e] py-1 font-bold rounded-2xl">Cancel</button>
-                <button @click="editTask" class="col-start-3 text-[#ffffff] bg-yellow-500 hover:bg-amber-500 py-1 font-bold rounded-2xl">Save</button>
+                <button @click="emit('close',false)" class="col-start-2 text-white bg-red-600 hover:bg-[#c20e0e] py-1 font-bold rounded-2xl cursor-pointer">Cancel</button>
+                <button @click="editTask" class="col-start-3 text-[#ffffff] bg-yellow-500 hover:bg-amber-500 py-1 font-bold rounded-2xl cursor-pointer">Save</button>
             </div>
         </div>
     </header>

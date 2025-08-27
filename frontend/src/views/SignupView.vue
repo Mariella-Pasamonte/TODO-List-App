@@ -27,7 +27,9 @@
             if(password.value===confPassword.value){
                 console.log("Password is the same.");
                 try {
-                    const response = await axios.post("http://127.0.0.1:8000/api/signup", {
+                    //Local:
+                    // const response = await axios.post("http://127.0.0.1:8000/api/signup", {
+                    const response = await axios.post("https://proactive-perception-production.up.railway.app/api/signup", {
                         firstname: firstName.value,
                         lastname: lastName.value,
                         username: username.value,

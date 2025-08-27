@@ -27,7 +27,8 @@
 
     async function changeComplete(id:Number, isCom:Boolean){
         try {
-            const response = await axios.patch(`http://127.0.0.1:8000/api/task/${id}/complete`, {
+            // const response = await axios.patch(`http://127.0.0.1:8000/api/task/${id}/complete`, {
+            const response = await axios.patch(`https://proactive-perception-production.up.railway.app/api/task/${id}/complete`, {
                 isCompleted: isCom,
             },{
                 headers: {

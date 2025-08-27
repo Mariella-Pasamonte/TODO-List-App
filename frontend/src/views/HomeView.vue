@@ -61,7 +61,8 @@
 
   const fetchTasks = async () => {
       try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/getTasks?user_id=${userId}`)
+          // const response = await axios.get(`http://127.0.0.1:8000/api/getTasks?user_id=${userId}`)
+          const response = await axios.get(`https://todo-list-app-8qso.onrender.com/api/getTasks?user_id=${userId}`)
           allTasks.value = response.data.tasks
       } catch (err:any) {
           emit('notif',err.response.data.message,true)
@@ -70,7 +71,8 @@
 
   const deleteTask = async() =>{
       try{
-          const response = await axios.delete(`http://127.0.0.1:8000/api/deleteTask/${deleteTaskId.value}`);
+          // const response = await axios.delete(`http://127.0.0.1:8000/api/deleteTask/${deleteTaskId.value}`);
+          const response = await axios.delete(`https://proactive-perception-production.up.railway.app/api/deleteTask/${deleteTaskId.value}`);
           fetchTasks()
           closeTask(false)
           isDeletePopUp.value=false

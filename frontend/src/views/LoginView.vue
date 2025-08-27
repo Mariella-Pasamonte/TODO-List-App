@@ -11,7 +11,7 @@
 
     const emit = defineEmits<{
         (e: "loginNotif", notif: String, isError: Boolean, userId: Number): void,
-        (e: "notif", msg: String, isErr: Boolean): void,
+        (e: "notif", msg: String, isErr:Boolean): void,
     }>()
     const username = ref('')
     const password = ref('')
@@ -19,7 +19,8 @@
     const login = async () => {
         if(username.value!==''||password.value!==''){
             try {
-                const response = await axios.post("http://127.0.0.1:8000/api/login", {
+                // const response = await axios.post("http://127.0.0.1:8000/api/login", {
+                const response = await axios.post("https://proactive-perception-production.up.railway.app/api/login", {
                     username: username.value,
                     password: password.value,
                 });

@@ -9,7 +9,7 @@
 
     const props = defineProps<{
         label: string,
-        id: number|string, 
+        id: any, 
         active: Boolean
     }>();
     

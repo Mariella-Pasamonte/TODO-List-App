@@ -10,7 +10,8 @@
     }
 
     const emit = defineEmits<{
-        (e: "loginNotif", notif: String, isError: Boolean, userId: Number): void
+        (e: "loginNotif", notif: String, isError: Boolean, userId: Number): void,
+        (e: "notif", msg: String, isErr: Boolean): void,
     }>()
     const username = ref('')
     const password = ref('')
@@ -28,13 +29,13 @@
                 route('/home');
             } catch (err:any) {
                 if (err.response) {
-                    emit('loginNotif',err.response.data.message || "Login failed",true)
+                    emit('notif',err.response.data.message || "Login failed",true)
                 } else {
-                    emit('loginNotif',"Server not reachable",true)
+                    emit('notif',"Server not reachable",true)
                 }
             }
         }else{
-            emit('loginNotif',"Please fill up all the fields.",true)
+            emit('notif',"Please fill up all the fields.",true)
         }
     }
 </script>
